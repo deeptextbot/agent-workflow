@@ -1,0 +1,67 @@
+# Workflow settings. Installed per project at .agents/workflow.yaml.
+#
+# Resolution order, highest first:
+#   1. arguments on the invocation:  feature rigor=fast top_scenarios=4
+#   2. `overrides` below
+#   3. the preset named by `rigor`
+#   4. the `standard` values, when this file is missing
+
+rigor: standard # fast | standard | strict
+
+# Any preset setting can be pinned here regardless of the active preset.
+overrides: {}
+#  top_scenarios: 4
+#  blind_gates: all
+
+project:
+  check_command: "" # full gate, e.g. "make check". Empty: discover it from the repo, ask if unclear.
+  base_branch: "" # e.g. "main". Empty: use the remote's default branch.
+
+presets:
+  fast:
+    domain_detail: brief
+    blind_gates: invariants
+    top_scenarios: 3
+    extra_scenarios: 3
+    min_failure_modes: 1
+    code_pauses: diff
+    review_nits: 0
+    rereview: fixes
+
+  standard:
+    domain_detail: full
+    blind_gates: all
+    top_scenarios: 5
+    extra_scenarios: 10
+    min_failure_modes: 2
+    code_pauses: stubs_and_diff
+    review_nits: 3
+    rereview: full
+
+  strict:
+    domain_detail: full
+    blind_gates: all
+    top_scenarios: 7
+    extra_scenarios: 15
+    min_failure_modes: 3
+    code_pauses: every_step
+    review_nits: 3
+    rereview: full
+
+# Setting reference
+#
+# domain_detail      brief: entities and legal states.
+#                    full: also ownership boundaries and an ER diagram.
+# blind_gates        Where the human writes first, before the agent shows anything.
+#                    all: invariants, manual scenarios, card failure modes.
+#                    invariants: invariants only; the agent drafts the rest, the human edits.
+#                    none: the agent drafts everything, the human edits.
+# top_scenarios      Exact number of high-ROI manual scenarios, written out step by step.
+# extra_scenarios    Upper limit of one-line manual scenarios.
+# min_failure_modes  Minimum failure modes named per card.
+# code_pauses        diff: one stop, at the diff review.
+#                    stubs_and_diff: stop at the test stubs and at the diff review.
+#                    every_step: stop after every step and every code chunk.
+# review_nits        Maximum style-level findings reported per review.
+# rereview           full: re-read the whole diff after fixes.
+#                    fixes: re-read only what the fixes touched.
